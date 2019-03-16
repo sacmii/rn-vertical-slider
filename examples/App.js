@@ -8,7 +8,7 @@
 
 import React, { Component } from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
-import VerticalSlider from "react-native-vertical-slider";
+import VerticalSlider from "rn-vertical-slider";
 
 type Props = {};
 export default class App extends Component<Props> {

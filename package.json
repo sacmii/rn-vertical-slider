@@ -1,5 +1,5 @@
 {
-  "name": "react-native-vertical-slider",
+  "name": "rn-vertical-slider",
   "version": "1.0.0",
   "description": "A simple React native vertical slider component completely written in JS.",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sacmii/react-native-vertical-slider.git"
+    "url": "git+https://github.com/sacmii/rn-vertical-slider.git"
   },
   "keywords": [
     "react-native",
@@ -27,13 +27,13 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sacmii/react-native-vertical-slider/issues"
+    "url": "https://github.com/sacmii/rn-vertical-slider/issues"
   },
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
   },
-  "homepage": "https://github.com/sacmii/react-native-vertical-slider#readme",
+  "homepage": "https://github.com/sacmii/rn-vertical-slider#readme",
   "devDependencies": {
     "metro-react-native-babel-preset": "^0.53.1"
   }
