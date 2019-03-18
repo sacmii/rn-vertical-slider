@@ -41,13 +41,12 @@ type State = {
   panResponder: any
 };
 
-export default class Slider extends Component<Props, State> {
+export default class VerticalSlider extends Component<Props, State> {
   _moveStartValue = null;
 
   constructor(props: Props) {
     super(props);
 
-    // Pan Responder
     let panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => false,
@@ -58,21 +57,20 @@ export default class Slider extends Component<Props, State> {
         if (this.props.disabled) {
           return;
         }
-        // Get Posiiton
-        const position = this._fetchPositionFromGesture(gestureState);
-        this._changeState(position);
+        const value = this._fetchNewValueFromGesture(gestureState);
+        this._changeState(value);
         if (this.props.onChange) {
-          this.props.onChange(position);
+          this.props.onChange(value);
         }
       },
       onPanResponderRelease: (event, gestureState) => {
         if (this.props.disabled) {
           return;
         }
-        const position = this._fetchPositionFromGesture(gestureState);
-        this._changeState(position);
+        const value = this._fetchNewValueFromGesture(gestureState);
+        this._changeState(value);
         if (this.props.onComplete) {
-          this.props.onComplete(position);
+          this.props.onComplete(value);
         }
       },
       onPanResponderTerminationRequest: () => false,
@@ -80,15 +78,14 @@ export default class Slider extends Component<Props, State> {
         if (this.props.disabled) {
           return;
         }
-        const position = this._fetchPositionFromGesture(gestureState);
-        this._changeState(position);
+        const value = this._fetchNewValueFromGesture(gestureState);
+        this._changeState(value);
         if (this.props.onComplete) {
-          this.props.onComplete(position);
+          this.props.onComplete(value);
         }
       }
     });
 
-    // State
     this.state = {
       value: props.value,
       preValue: props.value,
@@ -98,11 +95,10 @@ export default class Slider extends Component<Props, State> {
     };
   }
 
-  _fetchPositionFromGesture(gestureState: any): number {
+  _fetchNewValueFromGesture(gestureState: any): number {
     const { min, max, step, height } = this.props;
     const ratio = -gestureState.dy / height;
     const diff = max - min;
-    // If Step present
     if (step) {
       return Math.max(
         min,
@@ -116,16 +112,14 @@ export default class Slider extends Component<Props, State> {
     return Math.floor(value * 100) / 100;
   }
 
-  _getSliderHeight(): number {
+  _getSliderHeight(value: number): number {
     const { min, max, height } = this.props;
-    const { value } = this.state;
     return ((value - min) * height) / (max - min);
   }
 
   _changeState(value: number): void {
-    // Animating Slider
     const { height, ballIndicatorWidth } = this.props;
-    const sliderHeight = (height / 100) * value;
+    const sliderHeight = this._getSliderHeight(value);
     let ballPosition = sliderHeight;
     const ballHeight = ballIndicatorWidth ? ballIndicatorWidth : 48;
     if (ballPosition + ballHeight >= height) {
@@ -145,13 +139,13 @@ export default class Slider extends Component<Props, State> {
         easing: Easing.linear
       })
     ]).start();
-    // Setting value
     this.setState({ value });
   }
 
   componentDidMount() {
-    if (this.props.value) {
-      this._changeState(this.props.value);
+    const { value } = this.props;
+    if (value) {
+      this._changeState(value);
     }
   }
 
@@ -175,10 +169,11 @@ export default class Slider extends Component<Props, State> {
       ballIndicatorTextColor
     } = this.props;
     return (
-      <View style={[styles.shadow, { height, width, borderRadius }]}>
+      <View style={[{ height, width, borderRadius }]}>
         <View
           style={[
             styles.container,
+            styles.shadow,
             {
               height,
               width,
