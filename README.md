@@ -56,6 +56,9 @@ npm install rn-vertical-slider
 |ballIndicatorPosition|number|-50|Horizontal position of Indicator with respect to current selected value.|
 |ballIndicatorTextColor|string|'#fff'|Indicator text color.|
 
+## Extras
+* *[Gradient Slider](https://github.com/sacmii/rn-vertical-slider-gradient)* Slider with linear gradient
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
