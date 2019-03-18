@@ -149,6 +149,12 @@ export default class Slider extends Component<Props, State> {
     this.setState({ value });
   }
 
+  componentDidMount() {
+    if (this.props.value) {
+      this._changeState(this.props.value);
+    }
+  }
+
   render() {
     const {
       value,

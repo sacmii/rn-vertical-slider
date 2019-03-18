@@ -1,6 +1,6 @@
 {
   "name": "rn-vertical-slider",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A simple React native vertical slider component completely written in JS.",
   "main": "index.js",
   "scripts": {
