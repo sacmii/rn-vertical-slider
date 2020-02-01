@@ -154,12 +154,6 @@ export default class VerticalSlider extends Component<Props, State> {
 
   render() {
     const {
-      value,
-      disabled,
-      min,
-      max,
-      onChange,
-      onComplete,
       width,
       height,
       borderRadius,
@@ -171,6 +165,7 @@ export default class VerticalSlider extends Component<Props, State> {
       ballIndicatorPosition,
       ballIndicatorTextColor
     } = this.props;
+    const { value } = this.state;
     return (
       <View style={[{ height, width, borderRadius }]}>
         <View
@@ -228,7 +223,7 @@ export default class VerticalSlider extends Component<Props, State> {
                 }
               ]}
             >
-              {this.state.value}
+              {Math.round(value * 100) / 100}
             </Text>
           </Animated.View>
         ) : null}
