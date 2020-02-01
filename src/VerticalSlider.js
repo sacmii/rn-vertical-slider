@@ -30,7 +30,8 @@ type Props = {
   ballIndicatorColor?: string,
   ballIndicatorWidth?: number,
   ballIndicatorPosition?: number,
-  ballIndicatorTextColor?: string
+  ballIndicatorTextColor?: string,
+  animationDuration?: number,
 };
 
 type State = {
@@ -118,7 +119,7 @@ export default class VerticalSlider extends Component<Props, State> {
   }
 
   _changeState(value: number): void {
-    const { height, ballIndicatorWidth } = this.props;
+    const { height, ballIndicatorWidth, animationDuration } = this.props;
     const sliderHeight = this._getSliderHeight(value);
     let ballPosition = sliderHeight;
     const ballHeight = ballIndicatorWidth ? ballIndicatorWidth : 48;
@@ -132,11 +133,13 @@ export default class VerticalSlider extends Component<Props, State> {
     Animated.parallel([
       Animated.timing(this.state.sliderHeight, {
         toValue: sliderHeight,
-        easing: Easing.linear
+        easing: Easing.linear,
+        duration: animationDuration || 0,
       }),
       Animated.timing(this.state.ballHeight, {
         toValue: ballPosition,
-        easing: Easing.linear
+        easing: Easing.linear,
+        duration: animationDuration || 0
       })
     ]).start();
     this.setState({ value });
