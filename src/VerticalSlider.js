@@ -135,11 +135,13 @@ export default class VerticalSlider extends Component<Props, State> {
         toValue: sliderHeight,
         easing: Easing.linear,
         duration: animationDuration || 0,
+        useNativeDriver: false,
       }),
       Animated.timing(this.state.ballHeight, {
         toValue: ballPosition,
         easing: Easing.linear,
-        duration: animationDuration || 0
+        duration: animationDuration || 0,
+        useNativeDriver: false,
       })
     ]).start();
     this.setState({ value });
