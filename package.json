@@ -3,9 +3,9 @@
   "version": "1.1.0",
   "description": "A simple React native vertical slider component completely written in JS.",
   "main": "lib/VerticalSlider",
-  "types": "lib",
+  "types": "lib/VerticalSlider.d.ts",
   "scripts": {
-    "build": "rm -rf ./lib/* && tsc -p ."
+    "build": "rm -rf ./lib/* && tsc"
   },
   "repository": {
     "type": "git",
@@ -42,14 +42,16 @@
   },
   "homepage": "https://github.com/sacmii/rn-vertical-slider#readme",
   "devDependencies": {
-    "metro-react-native-babel-preset": "^0.53.1",
-    "react": "^16.13.1",
-    "react-native": "^0.62.2",
     "@types/node": "^14.0.5",
     "@types/react": "^16.9.35",
     "@types/react-dom": "^16.9.8",
     "@types/react-native": "^0.62.11",
+    "metro-react-native-babel-preset": "^0.53.1",
     "ts-node": "^8.10.1",
     "typescript": "^3.9.3"
+  },
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-native": "^0.62.2"
   }
 }

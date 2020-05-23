@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {
   View,
   Text,
@@ -27,9 +27,20 @@ interface props {
   step?: number;
   ballIndicatorColor?: string;
   ballIndicatorWidth?: number;
+  ballIndicatorHeight?: number;
   ballIndicatorPosition?: number;
   ballIndicatorTextColor?: string;
   animationDuration?: number;
+  showBackgroundShadow?: boolean;
+  shadowProps?: {
+    shadowOffsetWidth?: number;
+    shadowOffsetHeight?: number;
+    shadowOpacity?: number;
+    shadowRadius?: number;
+    elevation?: number;
+    shadowColor?: string;
+  };
+  renderIndicator: (value: number) => JSX.Element;
 }
 
 interface state {
@@ -124,10 +135,18 @@ export default class VerticalSlider extends React.Component<props, state> {
   };
 
   _changeState = (value: number): void => {
-    const { height, ballIndicatorWidth, animationDuration } = this.props;
+    const {
+      height,
+      ballIndicatorWidth = 48,
+      ballIndicatorHeight = 48,
+      renderIndicator = null,
+      animationDuration,
+    } = this.props;
     const sliderHeight = this._getSliderHeight(value);
     let ballPosition = sliderHeight;
-    const ballHeight = ballIndicatorWidth ? ballIndicatorWidth : 48;
+    const ballHeight = renderIndicator
+      ? ballIndicatorHeight
+      : ballIndicatorWidth;
     if (ballPosition + ballHeight >= height) {
       ballPosition = height - ballHeight;
     } else if (ballPosition - ballHeight <= 0) {
@@ -169,16 +188,43 @@ export default class VerticalSlider extends React.Component<props, state> {
       showBallIndicator = false,
       ballIndicatorColor = '#ECECEC',
       ballIndicatorWidth = 48,
+      ballIndicatorHeight = 48,
       ballIndicatorPosition = -60,
       ballIndicatorTextColor = '#000000',
+      showBackgroundShadow = true,
+      shadowProps: {
+        shadowOffsetWidth = 0,
+        shadowOffsetHeight = 1,
+        shadowOpacity = 0.22,
+        shadowRadius = 2.22,
+        elevation = 3,
+        shadowColor = '#000',
+      } = {},
+      renderIndicator = null,
     } = this.props;
+
+    const shadowStyles = {
+      shadowColor,
+      shadowOffset: {
+        width: shadowOffsetWidth,
+        height: shadowOffsetHeight,
+      },
+      shadowOpacity,
+      shadowRadius,
+      elevation,
+    };
+
     const { value } = this.state;
     return (
-      <View style={[{ height, width, borderRadius }]}>
+      <View
+        style={[
+          showBackgroundShadow ? shadowStyles : {},
+          { height, width, borderRadius },
+        ]}
+      >
         <View
           style={[
             styles.container,
-            styles.shadow,
             {
               height,
               width,
@@ -203,27 +249,37 @@ export default class VerticalSlider extends React.Component<props, state> {
           <Animated.View
             style={[
               styles.ball,
-              styles.shadow,
+              showBackgroundShadow ? shadowStyles : {},
               {
-                width: ballIndicatorWidth,
-                height: ballIndicatorWidth,
-                borderRadius: ballIndicatorWidth,
+                height: renderIndicator
+                  ? ballIndicatorHeight
+                  : ballIndicatorWidth,
                 bottom: this.state.ballHeight,
                 left: ballIndicatorPosition,
-                backgroundColor: ballIndicatorColor,
+                width: ballIndicatorWidth,
               },
+              renderIndicator
+                ? {}
+                : {
+                    borderRadius: ballIndicatorWidth,
+                    backgroundColor: ballIndicatorColor,
+                  },
             ]}
           >
-            <Text
-              style={[
-                styles.ballText,
-                {
-                  color: ballIndicatorTextColor,
-                },
-              ]}
-            >
-              {Math.round(value * 100) / 100}
-            </Text>
+            {renderIndicator ? (
+              renderIndicator(value)
+            ) : (
+              <Text
+                style={[
+                  styles.ballText,
+                  {
+                    color: ballIndicatorTextColor,
+                  },
+                ]}
+              >
+                {Math.round(value * 100) / 100}
+              </Text>
+            )}
           </Animated.View>
         ) : null}
       </View>
@@ -232,16 +288,6 @@ export default class VerticalSlider extends React.Component<props, state> {
 }
 
 const styles = StyleSheet.create({
-  shadow: {
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 3,
-  },
   ball: {
     position: 'absolute',
     alignItems: 'center',
