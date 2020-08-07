@@ -134,7 +134,7 @@ export default class VerticalSlider extends React.Component<props, state> {
     return ((value - min) * height) / (max - min);
   };
 
-  _changeState = (value: number): void => {
+  _changeSliderDisplay = (value: number): void => {
     const {
       height,
       ballIndicatorWidth = 48,
@@ -168,13 +168,24 @@ export default class VerticalSlider extends React.Component<props, state> {
         useNativeDriver: false,
       }),
     ]).start();
+  };
+
+  _changeState = (value: number): void => {
+    this._changeSliderDisplay(value);
     this.setState({ value });
   };
 
   componentDidMount() {
     const { value } = this.props;
-    if (value) {
+    if (value !== null && value !== undefined) {
       this._changeState(value);
+    }
+  }
+
+  componentDidUpdate() {
+    const { value } = this.props;
+    if (value !== null && value !== undefined) {
+      this._changeSliderDisplay(value);
     }
   }
 
