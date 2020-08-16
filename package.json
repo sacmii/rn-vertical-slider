@@ -32,7 +32,12 @@
   "keywords": [
     "react-native",
     "ios",
-    "android"
+    "android",
+    "vertical-slider",
+    "column-slider",
+    "react-native-vertical-slider",
+    "rn",
+    "rn-vertical-slider"
   ],
   "repository": "https://github.com/sacmii/rn-vertical-slider",
   "author": "Aswin Lakshmanan <aswinlak9@gmail.com> (https://github.com/sacmii)",
@@ -119,7 +124,10 @@
       ]
     }
   },
-  "eslintIgnore": ["node_modules/", "lib/"],
+  "eslintIgnore": [
+    "node_modules/",
+    "lib/"
+  ],
   "prettier": {
     "quoteProps": "consistent",
     "singleQuote": true,
@@ -130,6 +138,10 @@
   "@react-native-community/bob": {
     "source": "src",
     "output": "lib",
-    "targets": ["commonjs", "module", "typescript"]
+    "targets": [
+      "commonjs",
+      "module",
+      "typescript"
+    ]
   }
 }
