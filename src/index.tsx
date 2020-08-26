@@ -267,7 +267,7 @@ export default class VerticalSlider extends React.Component<props, state> {
             ]}
           >
             {renderIndicator ? (
-              renderIndicator(value)
+              renderIndicator(this.state.value)
             ) : (
               <Text
                 style={[
