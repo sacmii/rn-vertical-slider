@@ -25,6 +25,7 @@ interface props {
   minimumTrackTintColor?: string;
   showBallIndicator?: boolean;
   step?: number;
+  ballIndicatorPointerEvents?: "box-none" | "none" | "box-only" | "auto";
   ballIndicatorColor?: string;
   ballIndicatorWidth?: number;
   ballIndicatorHeight?: number;
@@ -193,6 +194,7 @@ export default class VerticalSlider extends React.Component<props, state> {
       maximumTrackTintColor = '#3F2DA5',
       minimumTrackTintColor = '#77ADE6',
       showBallIndicator = false,
+      ballIndicatorPointerEvents = 'auto',
       ballIndicatorColor = '#ECECEC',
       ballIndicatorWidth = 48,
       ballIndicatorHeight = 48,
@@ -254,6 +256,7 @@ export default class VerticalSlider extends React.Component<props, state> {
         </View>
         {showBallIndicator ? (
           <Animated.View
+            pointerEvents={ballIndicatorPointerEvents}
             style={[
               styles.ball,
               showBackgroundShadow ? shadowStyles : {},
