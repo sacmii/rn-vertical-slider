@@ -9,6 +9,8 @@ import {
   PanResponderInstance,
   GestureResponderEvent,
   PanResponderGestureState,
+  StyleProp,
+  TextStyle,
 } from 'react-native';
 
 interface props {
@@ -21,6 +23,12 @@ interface props {
   width: number;
   height: number;
   borderRadius?: number;
+  borderWidth?: number;
+  borderColor?: string;
+  textInside?: string;
+  textInsideStyle?: StyleProp<TextStyle>;
+  trackBorderTopWidth?: number;
+  trackBorderTopColor?: string;
   maximumTrackTintColor?: string;
   minimumTrackTintColor?: string;
   showBallIndicator?: boolean;
@@ -190,6 +198,12 @@ export default class VerticalSlider extends React.Component<props, state> {
       width = 350,
       height = 30,
       borderRadius = 5,
+      borderWidth = 0,
+      borderColor = '#000000',
+      textInside = '',
+      textInsideStyle = {},
+      trackBorderTopWidth = 0,
+      trackBorderTopColor = '#000000',
       maximumTrackTintColor = '#3F2DA5',
       minimumTrackTintColor = '#77ADE6',
       showBallIndicator = false,
@@ -236,6 +250,8 @@ export default class VerticalSlider extends React.Component<props, state> {
               height,
               width,
               borderRadius,
+              borderWidth,
+              borderColor,
               backgroundColor: maximumTrackTintColor,
             },
           ]}
@@ -247,11 +263,16 @@ export default class VerticalSlider extends React.Component<props, state> {
               {
                 height: this.state.sliderHeight,
                 width,
+                borderTopWidth: trackBorderTopWidth,
+                borderTopColor: trackBorderTopColor,
                 backgroundColor: minimumTrackTintColor,
               },
             ]}
           />
         </View>
+
+        <Text style={[styles.textInside, textInsideStyle]}>{textInside}</Text>
+
         {showBallIndicator ? (
           <Animated.View
             style={[
@@ -309,5 +330,10 @@ const styles = StyleSheet.create({
   slider: {
     position: 'absolute',
     bottom: 0,
+  },
+  textInside: {
+    alignSelf: 'center',
+    position: 'absolute',
+    textAlign: 'center',
   },
 });
