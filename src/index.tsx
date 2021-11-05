@@ -25,8 +25,8 @@ interface props {
   borderRadius?: number;
   borderWidth?: number;
   borderColor?: string;
-  textInside?: string;
-  textInsideStyle?: StyleProp<TextStyle>;
+  title?: string;
+  titleStyle?: StyleProp<TextStyle>;
   trackBorderTopWidth?: number;
   trackBorderTopColor?: string;
   maximumTrackTintColor?: string;
@@ -48,7 +48,7 @@ interface props {
     elevation?: number;
     shadowColor?: string;
   };
-  renderIndicator?: (value: number) => JSX.Element;
+  renderIndicator: (value: number) => JSX.Element;
 }
 
 interface state {
@@ -142,7 +142,7 @@ export default class VerticalSlider extends React.Component<props, state> {
     return ((value - min) * height) / (max - min);
   };
 
-  _changeState = (value: number): void => {
+  _changeSliderDisplay = (value: number): void => {
     const {
       height,
       ballIndicatorWidth = 48,
@@ -176,21 +176,25 @@ export default class VerticalSlider extends React.Component<props, state> {
         useNativeDriver: false,
       }),
     ]).start();
+  };
+
+  _changeState = (value: number): void => {
+    this._changeSliderDisplay(value);
     this.setState({ value });
   };
 
   componentDidMount() {
     const { value } = this.props;
-    if (value) {
+    if (value !== null && value !== undefined) {
       this._changeState(value);
     }
   }
 
-  shouldComponentUpdate(nextProps: props, nextState: state) {
-    if (nextProps.value && nextProps.value !== nextState.value) {
-      this._changeState(nextProps.value);
+  componentDidUpdate() {
+    const { value } = this.props;
+    if (value !== null && value !== undefined) {
+      this._changeSliderDisplay(value);
     }
-    return false;
   }
 
   render() {
@@ -200,8 +204,8 @@ export default class VerticalSlider extends React.Component<props, state> {
       borderRadius = 5,
       borderWidth = 0,
       borderColor = '#000000',
-      textInside = '',
-      textInsideStyle = {},
+      title = '',
+      titleStyle = {},
       trackBorderTopWidth = 0,
       trackBorderTopColor = '#000000',
       maximumTrackTintColor = '#3F2DA5',
@@ -271,7 +275,7 @@ export default class VerticalSlider extends React.Component<props, state> {
           />
         </View>
 
-        <Text style={[styles.textInside, textInsideStyle]}>{textInside}</Text>
+        <Text style={[styles.textInside, titleStyle]}>{title}</Text>
 
         {showBallIndicator ? (
           <Animated.View
