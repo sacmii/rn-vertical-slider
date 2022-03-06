@@ -1,12 +1,15 @@
 import * as React from 'react';
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import RnVerticalSlider from 'rn-vertical-slider';
 
 export default function App() {
+    const [value, setValue] = React.useState(0.5)
+
   return (
     <View style={styles.container}>
       <RnVerticalSlider
-        value={1}
+        value={value}
         disabled={false}
         min={0}
         max={100}
