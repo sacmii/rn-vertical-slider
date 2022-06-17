@@ -272,6 +272,7 @@ export default class VerticalSlider extends React.Component<props, state> {
                     backgroundColor: ballIndicatorColor,
                   },
             ]}
+            {...this.state.panResponder.panHandlers}
           >
             {renderIndicator ? (
               renderIndicator(value)
