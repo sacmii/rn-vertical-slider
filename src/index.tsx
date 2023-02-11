@@ -1,59 +1,22 @@
 import * as React from 'react';
 import {
   View,
-  Text,
   Animated,
   PanResponder,
   StyleSheet,
   Easing,
-  PanResponderInstance,
   GestureResponderEvent,
   PanResponderGestureState,
 } from 'react-native';
+import type { SliderProps, SliderState } from './slider.types';
 
-interface props {
-  value?: number;
-  disabled?: boolean;
-  min: number;
-  max: number;
-  onChange: (value: number) => void;
-  onComplete?: (value: number) => void;
-  width: number;
-  height: number;
-  borderRadius?: number;
-  maximumTrackTintColor?: string;
-  minimumTrackTintColor?: string;
-  showBallIndicator?: boolean;
-  step?: number;
-  ballIndicatorColor?: string;
-  ballIndicatorWidth?: number;
-  ballIndicatorHeight?: number;
-  ballIndicatorPosition?: number;
-  ballIndicatorTextColor?: string;
-  animationDuration?: number;
-  showBackgroundShadow?: boolean;
-  shadowProps?: {
-    shadowOffsetWidth?: number;
-    shadowOffsetHeight?: number;
-    shadowOpacity?: number;
-    shadowRadius?: number;
-    elevation?: number;
-    shadowColor?: string;
-  };
-  renderIndicator?: (value: number) => JSX.Element;
-}
-
-interface state {
-  value: number;
-  sliderHeight: Animated.Value;
-  ballHeight: Animated.Value;
-  panResponder: PanResponderInstance;
-}
-
-export default class VerticalSlider extends React.Component<props, state> {
+export default class VerticalSlider extends React.Component<
+  SliderProps,
+  SliderState
+> {
   _moveStartValue: number = 0;
 
-  constructor(props: props) {
+  constructor(props: SliderProps) {
     super(props);
 
     let panResponder = PanResponder.create({
@@ -178,13 +141,6 @@ export default class VerticalSlider extends React.Component<props, state> {
     }
   }
 
-  shouldComponentUpdate(nextProps: props, nextState: state) {
-    if (nextProps.value && nextProps.value !== nextState.value) {
-      this._changeState(nextProps.value);
-    }
-    return false;
-  }
-
   render() {
     const {
       width = 350,
@@ -276,7 +232,7 @@ export default class VerticalSlider extends React.Component<props, state> {
             {renderIndicator ? (
               renderIndicator(value)
             ) : (
-              <Text
+              <Animated.Text
                 style={[
                   styles.ballText,
                   {
@@ -285,7 +241,7 @@ export default class VerticalSlider extends React.Component<props, state> {
                 ]}
               >
                 {Math.round(value * 100) / 100}
-              </Text>
+              </Animated.Text>
             )}
           </Animated.View>
         ) : null}
