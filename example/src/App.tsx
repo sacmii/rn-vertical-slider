@@ -2,17 +2,16 @@ import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import RnVerticalSlider from 'rn-vertical-slider';
 
-export default function App() {
+const App: React.FC = () => {
+  const [value, setValue] = React.useState(0);
   return (
     <View style={styles.container}>
       <RnVerticalSlider
-        value={1}
+        value={value}
         disabled={false}
         min={0}
         max={100}
-        onChange={(value: number) => {
-          console.log('CHANGE', value);
-        }}
+        onChange={setValue}
         onComplete={(value: number) => {
           console.log('COMPLETE', value);
         }}
@@ -28,7 +27,9 @@ export default function App() {
       />
     </View>
   );
-}
+};
+
+export default App;
 
 const styles = StyleSheet.create({
   container: {

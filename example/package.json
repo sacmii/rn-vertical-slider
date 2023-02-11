@@ -1,21 +1,26 @@
 {
-  "name": "rn-vertical-slider-example",
-  "description": "Example app for rn-vertical-slider",
-  "version": "0.0.1",
-  "private": true,
+  "name": "example",
+  "version": "1.0.0",
+  "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
-    "start": "react-native start"
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
   },
   "dependencies": {
-    "react": "16.11.0",
-    "react-native": "0.62.3"
+    "expo": "~47.0.12",
+    "expo-status-bar": "~1.4.2",
+    "react": "18.1.0",
+    "react-native": "0.70.5",
+    "react-dom": "18.1.0",
+    "react-native-web": "~0.18.9"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.6",
-    "@babel/runtime": "^7.9.6",
-    "babel-plugin-module-resolver": "^4.0.0",
-    "metro-react-native-babel-preset": "^0.59.0"
-  }
+    "@babel/core": "^7.12.9",
+    "babel-plugin-module-resolver": "^4.1.0",
+    "@expo/webpack-config": "^0.17.2",
+    "babel-loader": "^8.1.0"
+  },
+  "private": true
 }
