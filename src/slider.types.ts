@@ -1,5 +1,3 @@
-import type { Animated, PanResponderInstance } from 'react-native';
-
 export type SliderProps = {
   value?: number;
   disabled?: boolean;
@@ -30,11 +28,4 @@ export type SliderProps = {
     shadowColor?: string;
   };
   renderIndicator?: (value: number) => JSX.Element;
-};
-
-export type SliderState = {
-  value: number;
-  sliderHeight: Animated.Value;
-  ballHeight: Animated.Value;
-  panResponder: PanResponderInstance;
 };

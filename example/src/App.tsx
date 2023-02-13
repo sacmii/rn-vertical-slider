@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import RnVerticalSlider from 'rn-vertical-slider';
 
 const App: React.FC = () => {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(1);
   return (
     <View style={styles.container}>
       <RnVerticalSlider
@@ -12,8 +12,8 @@ const App: React.FC = () => {
         min={0}
         max={100}
         onChange={setValue}
-        onComplete={(value: number) => {
-          console.log('COMPLETE', value);
+        onComplete={(newValue: number) => {
+          console.log('COMPLETE', newValue);
         }}
         width={50}
         height={300}
