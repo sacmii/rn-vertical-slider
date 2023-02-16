@@ -27,5 +27,5 @@ export type SliderProps = {
     elevation?: number;
     shadowColor?: string;
   };
-  renderIndicator?: (value: number) => JSX.Element;
+  renderIndicator?: (value: number) => JSX.Element | null;
 };

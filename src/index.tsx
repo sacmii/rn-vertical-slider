@@ -32,7 +32,7 @@ const VerticalSlider: React.FC<SliderProps> = ({
   onChange = () => {},
   onComplete = () => {},
   animationDuration = 100,
-  ...props
+  value: currentValue = 0,
 }) => {
   const {
     shadowOffsetWidth = 0,
@@ -85,36 +85,51 @@ const VerticalSlider: React.FC<SliderProps> = ({
 
   // Helper Variables
   let _moveStartValue = React.useRef<number>(0).current;
-  const value = React.useRef(new Animated.Value(props.value || 0)).current;
+  const value = React.useRef(new Animated.Value(currentValue)).current;
   const sliderHeight = React.useRef(new Animated.Value(0)).current;
   const ballHeight = React.useRef(new Animated.Value(0)).current;
 
-  const getSliderHeight = (value: number) => {
-    return ((value - min) * height) / (max - min);
+  const getSliderHeight = (newValue: number) => {
+    return ((newValue - min) * height) / (max - min);
   };
+
+  // Calculating Values from props.value
+  const calculateValues = () => {
+    updateNewValue(currentValue);
+  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(calculateValues, [currentValue]);
+
+  // Initializing when component mounts
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(calculateValues, []);
+  // Initializing when component mounts
 
   const _calculateValue = (gestureState: PanResponderGestureState) => {
     const ratio = -gestureState.dy / height;
     const diff = max - min;
-    if (step) {
-      return Math.max(
-        min,
-        Math.min(
-          max,
-          _moveStartValue.valueOf() + Math.round((ratio * diff) / step) * step
+    return step
+      ? Math.max(
+          min,
+          Math.min(
+            max,
+            _moveStartValue.valueOf() + Math.round((ratio * diff) / step) * step
+          )
         )
-      );
-    }
-    let value = Math.max(min, _moveStartValue.valueOf() + ratio * diff);
-    return Math.floor(value * 100) / 100;
+      : Math.floor(
+          Math.max(min, _moveStartValue.valueOf() + ratio * diff) * 100
+        ) / 100;
   };
 
-  const updateNewValue = (
-    newValue: number,
-    callback: (value: number) => void
-  ) => {
-    value.setValue(newValue);
-    const _sliderHeight = getSliderHeight(newValue);
+  // Make values stable stand in between min and max
+  const _clamp = (newValue: number, minValue: number, maxValue: number) => {
+    return Math.min(Math.max(newValue, minValue), maxValue);
+  };
+
+  const updateNewValue = (newValue: number) => {
+    let valueToUpdate = _clamp(newValue, min, max);
+    value.setValue(valueToUpdate);
+    const _sliderHeight = getSliderHeight(valueToUpdate);
     let _ballPosition = _sliderHeight;
     const _ballHeight = renderIndicator
       ? ballIndicatorHeight
@@ -140,7 +155,6 @@ const VerticalSlider: React.FC<SliderProps> = ({
         useNativeDriver: false,
       }),
     ]).start();
-    callback(newValue);
   };
   // End Helper Variables
 
@@ -159,7 +173,7 @@ const VerticalSlider: React.FC<SliderProps> = ({
     if (disabled) {
       return;
     }
-    updateNewValue(_calculateValue(gestureState), onChange);
+    onChange(_calculateValue(gestureState));
   };
   const onPanResponderRelease = (
     _event: GestureResponderEvent,
@@ -168,7 +182,7 @@ const VerticalSlider: React.FC<SliderProps> = ({
     if (disabled) {
       return;
     }
-    updateNewValue(_calculateValue(gestureState), onComplete);
+    onChange(_calculateValue(gestureState));
   };
   const onPanResponderTerminate = (
     _event: GestureResponderEvent,
@@ -177,7 +191,7 @@ const VerticalSlider: React.FC<SliderProps> = ({
     if (disabled) {
       return;
     }
-    updateNewValue(_calculateValue(gestureState), onComplete);
+    onComplete(_calculateValue(gestureState));
   };
   // End PanResponder handlers
   // Value connected to state, slider height Animated Value, ballHeight Animated Value, panResponder
@@ -234,7 +248,8 @@ const VerticalSlider: React.FC<SliderProps> = ({
           ]}
         >
           {renderIndicator ? (
-            renderIndicator(10)
+            // @ts-ignore
+            renderIndicator(value._value)
           ) : (
             <Animated.Text
               style={[styles.ballText, { color: ballIndicatorTextColor }]}
