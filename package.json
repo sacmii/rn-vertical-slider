@@ -56,8 +56,8 @@
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
+    "@commitlint/config-conventional": "^17.4.4",
     "@evilmartians/lefthook": "^1.2.2",
-    "@commitlint/config-conventional": "^17.0.2",
     "@react-native-community/eslint-config": "^3.0.2",
     "@release-it/conventional-changelog": "^5.0.0",
     "@types/jest": "^28.1.2",
@@ -74,6 +74,7 @@
     "react": "18.1.0",
     "react-native": "0.70.5",
     "react-native-builder-bob": "^0.20.0",
+    "react-native-reanimated": "^2.14.4",
     "release-it": "^15.0.0",
     "typescript": "^4.5.2"
   },
@@ -82,7 +83,8 @@
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-reanimated": "*"
   },
   "engines": {
     "node": ">= 16.0.0"

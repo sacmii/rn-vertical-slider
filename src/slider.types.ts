@@ -17,7 +17,6 @@ export type SliderProps = {
   ballIndicatorHeight?: number;
   ballIndicatorPosition?: number;
   ballIndicatorTextColor?: string;
-  animationDuration?: number;
   showBackgroundShadow?: boolean;
   shadowProps?: {
     shadowOffsetWidth?: number;

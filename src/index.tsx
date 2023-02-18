@@ -1,13 +1,15 @@
 import * as React from 'react';
 import {
   View,
-  Animated,
   PanResponder,
   StyleSheet,
   GestureResponderEvent,
   PanResponderGestureState,
-  Easing,
 } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 import type { SliderProps } from './slider.types';
 
 const VerticalSlider: React.FC<SliderProps> = ({
@@ -31,7 +33,6 @@ const VerticalSlider: React.FC<SliderProps> = ({
   disabled = false,
   onChange = () => {},
   onComplete = () => {},
-  animationDuration = 100,
   value: currentValue = 0,
 }) => {
   const {
@@ -84,14 +85,9 @@ const VerticalSlider: React.FC<SliderProps> = ({
   // End Slider base styles
 
   // Helper Variables
-  let _moveStartValue = React.useRef<number>(0).current;
-  const value = React.useRef(new Animated.Value(currentValue)).current;
-  const sliderHeight = React.useRef(new Animated.Value(0)).current;
-  const ballHeight = React.useRef(new Animated.Value(0)).current;
-
-  const getSliderHeight = (newValue: number) => {
-    return ((newValue - min) * height) / (max - min);
-  };
+  const _moveStartValue = useSharedValue<number>(0);
+  const _value = useSharedValue<number>(currentValue);
+  const value = new Animated.Value<number>(currentValue);
 
   // Calculating Values from props.value
   const calculateValues = () => {
@@ -103,7 +99,6 @@ const VerticalSlider: React.FC<SliderProps> = ({
   // Initializing when component mounts
   // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(calculateValues, []);
-  // Initializing when component mounts
 
   const _calculateValue = (gestureState: PanResponderGestureState) => {
     const ratio = -gestureState.dy / height;
@@ -113,11 +108,13 @@ const VerticalSlider: React.FC<SliderProps> = ({
           min,
           Math.min(
             max,
-            _moveStartValue.valueOf() + Math.round((ratio * diff) / step) * step
+            // @ts-ignore
+            _moveStartValue.value + Math.round((ratio * diff) / step) * step
           )
         )
       : Math.floor(
-          Math.max(min, _moveStartValue.valueOf() + ratio * diff) * 100
+          // @ts-ignore
+          Math.max(min, _moveStartValue.value + ratio * diff) * 100
         ) / 100;
   };
 
@@ -128,43 +125,16 @@ const VerticalSlider: React.FC<SliderProps> = ({
 
   const updateNewValue = (newValue: number) => {
     let valueToUpdate = _clamp(newValue, min, max);
+    _value.value = valueToUpdate;
     value.setValue(valueToUpdate);
-    const _sliderHeight = getSliderHeight(valueToUpdate);
-    let _ballPosition = _sliderHeight;
-    const _ballHeight = renderIndicator
-      ? ballIndicatorHeight
-      : ballIndicatorWidth;
-    if (_ballPosition + _ballHeight >= height) {
-      _ballPosition = height - _ballHeight;
-    } else if (_ballPosition - _ballHeight <= 0) {
-      _ballPosition = 0;
-    } else {
-      _ballPosition = _ballPosition - _ballHeight / 2;
-    }
-    Animated.parallel([
-      Animated.timing(sliderHeight, {
-        toValue: _sliderHeight,
-        easing: Easing.linear,
-        duration: animationDuration || 0,
-        useNativeDriver: false,
-      }),
-      Animated.timing(ballHeight, {
-        toValue: _ballPosition,
-        easing: Easing.linear,
-        duration: animationDuration || 0,
-        useNativeDriver: false,
-      }),
-    ]).start();
   };
-  // End Helper Variables
 
   // PanResponder handlers
   const onStartShouldSetPanResponder = () => true;
   const onMoveShouldSetPanResponder = () => false;
   const onPanResponderTerminationRequest = () => false;
   const onPanResponderGrant = () => {
-    // @ts-ignore
-    _moveStartValue = value._value;
+    _moveStartValue.value = _value.value;
   };
   const onPanResponderMove = (
     _event: GestureResponderEvent,
@@ -208,6 +178,44 @@ const VerticalSlider: React.FC<SliderProps> = ({
   ).current;
   // End Value connected to state, slider height Animated Value, ballHeight Animated Value, panResponder
 
+  const sliderStyle = useAnimatedStyle(
+    () => ({
+      height: ((_value.value - min) * height) / (max - min),
+      backgroundColor: minimumTrackTintColor,
+      borderRadius,
+    }),
+    [_value]
+  );
+
+  const ballStyle = useAnimatedStyle(() => {
+    let styles = {
+      height: renderIndicator ? ballIndicatorHeight : ballIndicatorWidth,
+      left: ballIndicatorPosition,
+      width: ballIndicatorWidth,
+      bottom: 0,
+      backgroundColor: 'transparent',
+      borderRadius: 0,
+    };
+    // If renderIndicator is provided, then we don't need to calculate the position of ballIndicator
+    if (!renderIndicator) {
+      styles.backgroundColor = ballIndicatorColor;
+      styles.borderRadius = ballIndicatorWidth;
+    }
+    let _sliderHeight = ((_value.value - min) * height) / (max - min);
+    let _ballPosition = _sliderHeight;
+    const _ballHeight =
+      renderIndicator !== null ? ballIndicatorHeight : ballIndicatorWidth;
+    if (_ballPosition + _ballHeight >= height) {
+      _ballPosition = height - _ballHeight;
+    } else if (_ballPosition - _ballHeight <= 0) {
+      _ballPosition = 0;
+    } else {
+      _ballPosition = _ballPosition - _ballHeight / 2;
+    }
+    styles.bottom = _ballPosition;
+    return styles;
+  }, [_value]);
+
   return (
     <View style={[shadowStyles, sliderBaseStyles]}>
       <View
@@ -218,38 +226,16 @@ const VerticalSlider: React.FC<SliderProps> = ({
         ]}
         {...panResponder.panHandlers}
       >
-        <Animated.View
-          style={[
-            sliderBaseStyles,
-            styles.slider,
-            { backgroundColor: minimumTrackTintColor, height: sliderHeight },
-          ]}
-        />
+        <Animated.View style={[sliderBaseStyles, styles.slider, sliderStyle]} />
       </View>
       {showBallIndicator && (
         <Animated.View
-          style={[
-            styles.ball,
-            shadowStyles,
-            {
-              height: renderIndicator
-                ? ballIndicatorHeight
-                : ballIndicatorWidth,
-              bottom: ballHeight,
-              left: ballIndicatorPosition,
-              width: ballIndicatorWidth,
-            },
-            renderIndicator
-              ? {}
-              : {
-                  backgroundColor: ballIndicatorColor,
-                  borderRadius: ballIndicatorWidth,
-                },
-          ]}
+          style={[styles.ball, shadowStyles, ballStyle]}
+          pointerEvents="none"
         >
           {renderIndicator ? (
             // @ts-ignore
-            renderIndicator(value._value)
+            renderIndicator(_value.value)
           ) : (
             <Animated.Text
               style={[styles.ballText, { color: ballIndicatorTextColor }]}

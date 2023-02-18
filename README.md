@@ -1,56 +1,60 @@
-# 🆕 React Native Vertical Slider 🎚
+# :control_knobs: rn-vertical-slider
 
-#### **(rn-vertical-slider)**
+A highly customizable vertical slider component for React Native using React Native Gesture Handler and Reanimated. Support this project with a ★ on [**Github**](https://github.com/sacmii/rn-vertical-slider).
 
-###### A vertical Slider for React Native written entirely in javascript. Support this project with a ★ on [**Github**](https://github.com/sacmii/rn-vertical-slider).
+<img src="https://user-images.githubusercontent.com/12546974/219866420-4796142d-396f-4b31-996a-89f570f7a863.gif" alt="Alt text" width="250">
 
-## ✨Features
+## :inbox_tray: Installation
 
-- 📝 Completely written in Typescript
-- 🔗 No Native linking required
+You can install this package using either Yarn or NPM.
 
-![Example1](https://user-images.githubusercontent.com/12546974/82729464-63a73d00-9d15-11ea-99dc-e432e61d8398.gif) ![Example2](https://user-images.githubusercontent.com/12546974/82730380-b0dadd00-9d1c-11ea-889d-03249c6b5f76.gif)
+### <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Npm-logo.svg/1200px-Npm-logo.svg.png" alt="Alt text" width="50">
 
-## 🏁 Getting Started
-
-- To add this slider to your project :
-
-```
+```bash
 npm install rn-vertical-slider
 ```
 
-## 🎨 Usage
+### <img src="https://raw.githubusercontent.com/yarnpkg/assets/master/yarn-kitten-full.png" alt="Alt text" width="50">
 
-- A basic example of slider
-
-```
-<VerticalSlider
-          value={1}
-          disabled={false}
-          min={0}
-          max={100}
-          onChange={(value: number) => {
-            console.log("CHANGE", value);
-          }}
-          onComplete={(value: number) => {
-            console.log("COMPLETE", value);
-          }}
-          width={50}
-          height={300}
-          step={1}
-          borderRadius={5}
-          minimumTrackTintColor={"gray"}
-          maximumTrackTintColor={"tomato"}
-          showBallIndicator
-          ballIndicatorColor={"gray"}
-          ballIndicatorTextColor={"white"}
-        />
+```bash
+yarn add rn-vertical-slider
 ```
 
-## 🎛 Props
+## :bulb: Usage
+
+```bash
+import VerticalSlider from 'rn-vertical-slider';
+
+function App() {
+  const [value, setValue] = useState(0);
+  return (
+    <VerticalSlider
+      value={value}
+      onChange={(value) => setValue(value)}
+      height={200}
+      width={40}
+      step={1}
+      min={0}
+      max={100}
+      borderRadius={5}
+      minimumTrackTintColor="#2979FF"
+      maximumTrackTintColor="#D1D1D6"
+      showBallIndicator
+      ballIndicatorColor="#2979FF"
+      ballIndicatorTextColor="#fff"
+      ballIndicatorWidth={80}
+      ballIndicatorHeight={40}
+    />
+  );
+}
+```
+
+<img src="https://user-images.githubusercontent.com/12546974/219865670-04781857-d2eb-48b5-a14d-104d73bdc928.gif" alt="Alt text" width="250">
+
+## :book: Props
 
 | Property               | Type     | Default   | Description                                                                                   |
-| :--------------------- | :------- | :-------- | :-------------------------------------------------------------------------------------------- |
+|:-----------------------|:---------|:----------|:----------------------------------------------------------------------------------------------|
 | value                  | number   | 0         | Value of the slider.                                                                          |
 | disabled               | bool     | false     | Enable or disable slider.                                                                     |
 | min                    | number   | 0         | Minimum value for slider.                                                                     |
@@ -69,48 +73,24 @@ npm install rn-vertical-slider
 | ballIndicatorHeight    | number   | 48        | Diameter of Indicator. [Width of Indicator : If renderIndicator present]                      |
 | ballIndicatorPosition  | number   | -50       | Horizontal position of Indicator with respect to current selected value.                      |
 | ballIndicatorTextColor | string   | '#fff'    | Indicator text color.                                                                         |
-| animationDuration      | number   | 0         | Animation Duration                                                                            |
 | showBackgroundShadow   | boolean  | 0         | Display shadow on Indicator (If available) and Slider                                         |
 | shadowProps            | object   | see below | Shadow Configuration for Slider                                                               |
-| renderIndicator        | boolean  | 0         | Render a custom slider indicator                                                              |
+| renderIndicator        | boolean  | 0         | Render a custom slider indicator      
 
-- #### shadowProps
+## :art: Demo
 
-shadowProps define the shadow properties for slider (Indicator Component if shown)
-Default Props :
+You can try the [example app](https://github.com/sacmii/rn-vertical-slider/tree/master/example) by cloning this repo and running the following commands:
 
-```
-  {
-      shadowOffsetWidth = 0,
-      shadowOffsetHeight = 1,
-      shadowOpacity = 0.22,
-      shadowRadius = 2.22,
-      elevation = 3,
-      shadowColor = '#000',
- }
+```sh
+cd example
+yarn install
+npx expo start
 ```
 
-- #### renderIndicator
+## :handshake: Contributing
 
-renderIndicator is used when you want to use custom indicator for the slider. _ballIndicatorHeight_, _ballIndicatorWidth_ will define the height and width of the component.
+Contributions are welcome! Feel free to open an issue or submit a pull request if you find a bug or have a feature request. See the [contributing guide](https://github.com/sacmii/rn-vertical-slider/blob/master/CONTRIBUTING) to learn how to contribute to the repository and the development workflow.
 
-- ##### Custom renderIndicator
+## :scroll: License
 
-  ![Custom Indicator](https://user-images.githubusercontent.com/12546974/82730062-89831080-9d1a-11ea-8f41-b37d02b79a69.gif)
-
-## 📌 Extras
-
-- _[Gradient Slider](https://github.com/sacmii/rn-vertical-slider-gradient)_ Slider with linear gradient
-- **Github** ★'s are more additcting than Coffee 🤩
-
-## ☀️ License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## 🚧 Contributing
-
-See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
-
-## License
-
-MIT
+This project is licensed under the [MIT License](https://github.com/sacmii/rn-vertical-slider/blob/master/LICENSE).
