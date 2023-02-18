@@ -6,8 +6,7 @@ A highly customizable vertical slider component for React Native using React Nat
 
 ## :inbox_tray: Installation
 
-You can install this package using either Yarn or NPM.
-
+You can install this package using either Yarn or NPM. 
 ### <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Npm-logo.svg/1200px-Npm-logo.svg.png" alt="Alt text" width="50">
 
 ```bash
@@ -19,6 +18,9 @@ npm install rn-vertical-slider
 ```bash
 yarn add rn-vertical-slider
 ```
+
+**rn-vertical-slider** requires [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/) to be installed, which is a peer dependency. This is a breaking change from version 2 to version 3.
+
 
 ## :bulb: Usage
 
