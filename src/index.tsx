@@ -29,12 +29,12 @@ const VerticalSlider: React.FC<SliderProps> = ({
   ballIndicatorTextColor = '#000000',
   showBackgroundShadow = true,
   shadowProps = {},
-  renderIndicator = null,
+  renderIndicator,
   disabled = false,
   onChange = () => {},
   onComplete = () => {},
   value: currentValue = 0,
-}) => {
+}: SliderProps) => {
   const {
     shadowOffsetWidth = 0,
     shadowOffsetHeight = 1,
@@ -152,7 +152,9 @@ const VerticalSlider: React.FC<SliderProps> = ({
     if (disabled) {
       return;
     }
-    onChange(_calculateValue(gestureState));
+    const newValue = _calculateValue(gestureState);
+    onChange(newValue);
+    onComplete(newValue);
   };
   const onPanResponderTerminate = (
     _event: GestureResponderEvent,
