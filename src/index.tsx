@@ -1,15 +1,14 @@
 import * as React from 'react';
-import {
-  View,
-  PanResponder,
-  StyleSheet,
-  GestureResponderEvent,
-  PanResponderGestureState,
-} from 'react-native';
+import { StyleSheet, ViewStyle } from 'react-native';
 import Animated, {
-  useAnimatedStyle,
   useSharedValue,
+  useAnimatedGestureHandler,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  runOnJS,
 } from 'react-native-reanimated';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 import type { SliderProps } from './slider.types';
 
 const VerticalSlider: React.FC<SliderProps> = ({
@@ -21,252 +20,115 @@ const VerticalSlider: React.FC<SliderProps> = ({
   borderRadius = 5,
   maximumTrackTintColor = '#3F2DA5',
   minimumTrackTintColor = '#77ADE6',
-  showBallIndicator = false,
-  ballIndicatorColor = '#ECECEC',
-  ballIndicatorWidth = 48,
-  ballIndicatorHeight = 48,
-  ballIndicatorPosition = -60,
-  ballIndicatorTextColor = '#000000',
-  showBackgroundShadow = true,
-  shadowProps = {},
-  renderIndicator,
   disabled = false,
   onChange = () => {},
   onComplete = () => {},
   value: currentValue = 0,
+  showIndicator = false,
+  renderIndicatorHeight = 40,
+  renderIndicator = () => null,
+  containerStyle = {},
+  sliderStyle = {},
 }: SliderProps) => {
-  const {
-    shadowOffsetWidth = 0,
-    shadowOffsetHeight = 1,
-    shadowOpacity = 0.22,
-    shadowRadius = 2.22,
-    elevation = 3,
-    shadowColor = '#000',
-  } = shadowProps || {};
-
-  // Calculating Shadow Styles
-  const calculateShadowStyles = () => {
-    if (showBackgroundShadow) {
-      return {
-        shadowOffset: {
-          width: shadowOffsetWidth,
-          height: shadowOffsetHeight,
-        },
-        shadowOpacity,
-        shadowRadius,
-        elevation,
-        shadowColor,
-      };
-    }
-    return {};
+  // Calculate the value of the slider
+  const calculateValue = (position: number): number => {
+    'worklet';
+    // Opposite of the current position
+    let sliderPosition = height - position;
+    // clamp the value between 0 and height
+    sliderPosition = Math.min(Math.max(sliderPosition, 0), height);
+    // Calculate the value of the slider
+    let value = (sliderPosition / height) * (max - min) + min;
+    // Round the value based on the step value and min and max
+    value = Math.round(value / step) * step;
+    // Clamp the value between min and max
+    value = Math.min(Math.max(value, min), max);
+    return value;
   };
-  const shadowStyles = React.useMemo(calculateShadowStyles, [
-    elevation,
-    shadowColor,
-    shadowOffsetHeight,
-    shadowOffsetWidth,
-    shadowOpacity,
-    shadowRadius,
-    showBackgroundShadow,
-  ]);
-  // End Calculating Shadow Styles
-
-  // Slider base styles
-  const calculateBaseStyles = () => ({
-    width,
-    height,
-    borderRadius,
+  let point = useSharedValue<number>(currentValue);
+  // Gesture event handler
+  const gestureEvent = useAnimatedGestureHandler({
+    onStart: (evt, _ctx) => {
+      if (disabled) return;
+      let value = calculateValue(evt.y);
+      point.value = withSpring(value, {
+        damping: 13,
+      });
+    },
+    onActive: (evt, _ctx) => {
+      if (disabled) return;
+      let value = calculateValue(evt.y);
+      point.value = withTiming(value, { duration: 50 });
+      runOnJS(onChange)(value);
+    },
+    onEnd: (evt, _ctx) => {
+      if (disabled) return;
+      runOnJS(onComplete)(calculateValue(evt.y));
+    },
+    onFinish: (evt, _ctx) => {
+      if (disabled) return;
+      runOnJS(onComplete)(calculateValue(evt.y));
+    },
   });
-  const sliderBaseStyles = React.useMemo(calculateBaseStyles, [
-    width,
-    height,
-    borderRadius,
-  ]);
-  // End Slider base styles
-
-  // Helper Variables
-  const _moveStartValue = useSharedValue<number>(0);
-  const _value = useSharedValue<number>(currentValue);
-  const value = new Animated.Value<number>(currentValue);
-
-  // Calculating Values from props.value
-  const calculateValues = () => {
-    updateNewValue(currentValue);
-  };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(calculateValues, [currentValue]);
-
-  // Initializing when component mounts
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(calculateValues, []);
-
-  const _calculateValue = (gestureState: PanResponderGestureState) => {
-    const ratio = -gestureState.dy / height;
-    const diff = max - min;
-    return step
-      ? Math.max(
-          min,
-          Math.min(
-            max,
-            // @ts-ignore
-            _moveStartValue.value + Math.round((ratio * diff) / step) * step
-          )
-        )
-      : Math.floor(
-          // @ts-ignore
-          Math.max(min, _moveStartValue.value + ratio * diff) * 100
-        ) / 100;
-  };
-
-  // Make values stable stand in between min and max
-  const _clamp = (newValue: number, minValue: number, maxValue: number) => {
-    return Math.min(Math.max(newValue, minValue), maxValue);
-  };
-
-  const updateNewValue = (newValue: number) => {
-    let valueToUpdate = _clamp(newValue, min, max);
-    _value.value = valueToUpdate;
-    value.setValue(valueToUpdate);
-  };
-
-  // PanResponder handlers
-  const onStartShouldSetPanResponder = () => true;
-  const onMoveShouldSetPanResponder = () => false;
-  const onPanResponderTerminationRequest = () => false;
-  const onPanResponderGrant = () => {
-    _moveStartValue.value = _value.value;
-  };
-  const onPanResponderMove = (
-    _event: GestureResponderEvent,
-    gestureState: PanResponderGestureState
-  ) => {
-    if (disabled) {
-      return;
-    }
-    onChange(_calculateValue(gestureState));
-  };
-  const onPanResponderRelease = (
-    _event: GestureResponderEvent,
-    gestureState: PanResponderGestureState
-  ) => {
-    if (disabled) {
-      return;
-    }
-    const newValue = _calculateValue(gestureState);
-    onChange(newValue);
-    onComplete(newValue);
-  };
-  const onPanResponderTerminate = (
-    _event: GestureResponderEvent,
-    gestureState: PanResponderGestureState
-  ) => {
-    if (disabled) {
-      return;
-    }
-    onComplete(_calculateValue(gestureState));
-  };
-  // End PanResponder handlers
-  // Value connected to state, slider height Animated Value, ballHeight Animated Value, panResponder
-  const panResponder = React.useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder,
-      onMoveShouldSetPanResponder,
-      onPanResponderTerminationRequest,
-      onPanResponderGrant,
-      onPanResponderMove,
-      onPanResponderRelease,
-      onPanResponderTerminate,
-    })
-  ).current;
-  // End Value connected to state, slider height Animated Value, ballHeight Animated Value, panResponder
-
-  const sliderStyle = useAnimatedStyle(
+  // All the dynamic style calculations
+  const baseViewStyle = useAnimatedStyle<ViewStyle>(
     () => ({
-      height: ((_value.value - min) * height) / (max - min),
-      backgroundColor: minimumTrackTintColor,
+      width,
+      height,
       borderRadius,
+      backgroundColor: maximumTrackTintColor,
     }),
-    [_value]
+    [point.value, maximumTrackTintColor, width, height, borderRadius]
   );
-
-  const ballStyle = useAnimatedStyle(() => {
-    let styles = {
-      height: renderIndicator ? ballIndicatorHeight : ballIndicatorWidth,
-      left: ballIndicatorPosition,
-      width: ballIndicatorWidth,
-      bottom: 0,
-      backgroundColor: 'transparent',
-      borderRadius: 0,
+  // slider style
+  const sliderBaseStyle = useAnimatedStyle<ViewStyle>(
+    () => ({
+      // Convert the value to height in number
+      height: `${(point.value / max) * 100}%`,
+      backgroundColor: minimumTrackTintColor,
+      borderBottomLeftRadius: borderRadius,
+      borderBottomRightRadius: borderRadius,
+      // if percentage > 97 , then show border top right anf left radius
+      ...((point.value / max) * 100 > 97
+        ? {
+            borderTopLeftRadius: borderRadius,
+            borderTopRightRadius: borderRadius,
+          }
+        : {
+            borderTopLeftRadius: 0,
+            borderTopRightRadius: 0,
+          }),
+    }),
+    [point.value, minimumTrackTintColor, borderRadius, height, max]
+  );
+  // indicator style
+  const indicatorStyle = useAnimatedStyle<ViewStyle>(() => {
+    if (!showIndicator) return {};
+    let bottom = (point.value / max) * height;
+    // Adjust the bottom value not to go beyond the height or less than 0
+    bottom = Math.min(Math.max(bottom, 0), height - renderIndicatorHeight);
+    return {
+      bottom,
     };
-    // If renderIndicator is provided, then we don't need to calculate the position of ballIndicator
-    if (!renderIndicator) {
-      styles.backgroundColor = ballIndicatorColor;
-      styles.borderRadius = ballIndicatorWidth;
-    }
-    let _sliderHeight = ((_value.value - min) * height) / (max - min);
-    let _ballPosition = _sliderHeight;
-    const _ballHeight =
-      renderIndicator !== null ? ballIndicatorHeight : ballIndicatorWidth;
-    if (_ballPosition + _ballHeight >= height) {
-      _ballPosition = height - _ballHeight;
-    } else if (_ballPosition - _ballHeight <= 0) {
-      _ballPosition = 0;
-    } else {
-      _ballPosition = _ballPosition - _ballHeight / 2;
-    }
-    styles.bottom = _ballPosition;
-    return styles;
-  }, [_value]);
-
+  }, [showIndicator, point.value, sliderBaseStyle]);
   return (
-    <View style={[shadowStyles, sliderBaseStyles]}>
-      <View
-        style={[
-          styles.container,
-          sliderBaseStyles,
-          { backgroundColor: maximumTrackTintColor },
-        ]}
-        {...panResponder.panHandlers}
-      >
-        <Animated.View style={[sliderBaseStyles, styles.slider, sliderStyle]} />
-      </View>
-      {showBallIndicator && (
-        <Animated.View
-          style={[styles.ball, shadowStyles, ballStyle]}
-          pointerEvents="none"
-        >
-          {renderIndicator ? (
-            // @ts-ignore
-            renderIndicator(_value.value)
-          ) : (
-            <Animated.Text
-              style={[styles.ballText, { color: ballIndicatorTextColor }]}
-            >
-              {value}
-            </Animated.Text>
-          )}
+    <PanGestureHandler onGestureEvent={gestureEvent}>
+      <Animated.View style={[baseViewStyle, containerStyle]}>
+        <Animated.View style={[styles.slider, sliderBaseStyle, sliderStyle]} />
+        <Animated.View style={[styles.slider, indicatorStyle]}>
+          {renderIndicator(point.value)}
         </Animated.View>
-      )}
-    </View>
+      </Animated.View>
+    </PanGestureHandler>
   );
 };
 
 const styles = StyleSheet.create({
-  ball: {
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  ballText: {
-    fontWeight: '900',
-  },
-  container: {
-    overflow: 'hidden',
-  },
   slider: {
     position: 'absolute',
     bottom: 0,
     borderRadius: 0,
+    width: '100%',
   },
 });
 

@@ -61,3 +61,7 @@ lib/
 
 #Environment FIles
 .env*
+
+# Lock Files for npm and yarn
+package-lock.json
+yarn.lock
