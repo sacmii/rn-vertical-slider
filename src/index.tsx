@@ -1,15 +1,31 @@
 import * as React from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
 import Animated, {
-  useSharedValue,
   useAnimatedGestureHandler,
   useAnimatedStyle,
   withSpring,
   withTiming,
   runOnJS,
+  useSharedValue,
 } from 'react-native-reanimated';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import type { SliderProps } from './slider.types';
+
+const calculateValue = (
+  position: number,
+  min: number,
+  max: number,
+  step: number,
+  height: number
+): number => {
+  'worklet';
+  let sliderPosition = height - position;
+  sliderPosition = Math.min(Math.max(sliderPosition, 0), height);
+  let value = (sliderPosition / height) * (max - min) + min;
+  value = Math.round(value / step) * step;
+  value = Math.min(Math.max(value, min), max);
+  return value;
+};
 
 const VerticalSlider: React.FC<SliderProps> = ({
   min = 0,
@@ -30,44 +46,25 @@ const VerticalSlider: React.FC<SliderProps> = ({
   containerStyle = {},
   sliderStyle = {},
 }: SliderProps) => {
-  // Calculate the value of the slider
-  const calculateValue = (position: number): number => {
-    'worklet';
-    // Opposite of the current position
-    let sliderPosition = height - position;
-    // clamp the value between 0 and height
-    sliderPosition = Math.min(Math.max(sliderPosition, 0), height);
-    // Calculate the value of the slider
-    let value = (sliderPosition / height) * (max - min) + min;
-    // Round the value based on the step value and min and max
-    value = Math.round(value / step) * step;
-    // Clamp the value between min and max
-    value = Math.min(Math.max(value, min), max);
-    return value;
-  };
   let point = useSharedValue<number>(currentValue);
   // Gesture event handler
   const gestureEvent = useAnimatedGestureHandler({
     onStart: (evt, _ctx) => {
       if (disabled) return;
-      let value = calculateValue(evt.y);
+      let value = calculateValue(evt.y, min, max, step, height);
       point.value = withSpring(value, {
         damping: 13,
       });
     },
     onActive: (evt, _ctx) => {
       if (disabled) return;
-      let value = calculateValue(evt.y);
+      let value = calculateValue(evt.y, min, max, step, height);
       point.value = withTiming(value, { duration: 50 });
       runOnJS(onChange)(value);
     },
-    onEnd: (evt, _ctx) => {
-      if (disabled) return;
-      runOnJS(onComplete)(calculateValue(evt.y));
-    },
     onFinish: (evt, _ctx) => {
       if (disabled) return;
-      runOnJS(onComplete)(calculateValue(evt.y));
+      runOnJS(onComplete)(calculateValue(evt.y, min, max, step, height));
     },
   });
   // All the dynamic style calculations

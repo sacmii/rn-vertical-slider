@@ -14,11 +14,11 @@ const renderIcon = (newVal: number) => {
       color: '#FFFBF5',
     };
     if (newVal > 75) {
-      styles.name = 'heart-circle-outline';
+      styles.name = 'star';
     } else if (newVal > 50) {
-      styles.name = 'help-circle-outline';
+      styles.name = 'ios-happy';
     } else {
-      styles.name = 'heart-dislike-circle-outline';
+      styles.name = 'ios-sad';
     }
     return styles;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -35,6 +35,26 @@ const renderIcon = (newVal: number) => {
 
 const App: React.FC = () => {
   const [value, setValue] = React.useState(1);
+  // Calculating color change based on value
+  const calculateColors = () => {
+    let minimumTrackTintColor = '#f3636b';
+    let maximumTrackTintColor = '#18122B';
+    if (value > 66) {
+      minimumTrackTintColor = '#48cbae';
+    } else if (value > 33) {
+      minimumTrackTintColor = '#f7d033';
+    }
+    return { minimumTrackTintColor, maximumTrackTintColor };
+  };
+  // Helper functions
+  const onChangeValue = (newValue: number) => {
+    console.log('🚀 ~ file: App.tsx:51 ~ onChangeValue ~ value:', value);
+    setValue(newValue);
+  };
+  const { maximumTrackTintColor, minimumTrackTintColor } = React.useMemo(
+    calculateColors,
+    [value]
+  );
   return (
     <GestureHandlerRootView style={styles.flexOne}>
       <View style={styles.container}>
@@ -43,7 +63,7 @@ const App: React.FC = () => {
           disabled={false}
           min={0}
           max={100}
-          onChange={setValue}
+          onChange={onChangeValue}
           onComplete={(newValue: number) => {
             console.log('COMPLETE', newValue);
           }}
@@ -53,8 +73,8 @@ const App: React.FC = () => {
           height={300}
           step={1}
           borderRadius={5}
-          maximumTrackTintColor="#18122B"
-          minimumTrackTintColor="#635985"
+          maximumTrackTintColor={maximumTrackTintColor}
+          minimumTrackTintColor={minimumTrackTintColor}
           renderIndicator={renderIcon}
         />
       </View>
