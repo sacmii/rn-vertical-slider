@@ -1,33 +1,15 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import * as React from 'react';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
-import RnVerticalSlider from 'rn-vertical-slider';
-import { Ionicons } from '@expo/vector-icons';
+import RnVerticalSlider, { SliderRef } from 'rn-vertical-slider';
 
 const renderIcon = (newVal: number) => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const iconProps = React.useMemo(() => {
-    let styles = {
-      name: '',
-      size: 30,
-      color: '#FFFBF5',
-    };
-    if (newVal > 75) {
-      styles.name = 'star';
-    } else if (newVal > 50) {
-      styles.name = 'ios-happy';
-    } else {
-      styles.name = 'ios-sad';
-    }
-    return styles;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newVal]);
   return (
     <View style={styles.renderContainer}>
       <Animated.Text>
-        {/* @ts-ignore */}
-        <Ionicons {...iconProps} />
+        <Ionicons name={newVal > 50 ? 'happy' : 'sad'} size={24} color="#fff" />
       </Animated.Text>
     </View>
   );
@@ -35,6 +17,7 @@ const renderIcon = (newVal: number) => {
 
 const App: React.FC = () => {
   const [value, setValue] = React.useState(1);
+  const ref = React.useRef<SliderRef>(null);
   // Calculating color change based on value
   const calculateColors = () => {
     let minimumTrackTintColor = '#f3636b';
@@ -55,29 +38,40 @@ const App: React.FC = () => {
     calculateColors,
     [value]
   );
+  const onManualChange = (newValue: number) => () => {
+    ref.current?.setValue(newValue);
+  };
   return (
     <GestureHandlerRootView style={styles.flexOne}>
-      <View style={styles.container}>
-        <RnVerticalSlider
-          value={value}
-          disabled={false}
-          min={0}
-          max={100}
-          onChange={onChangeValue}
-          onComplete={(newValue: number) => {
-            console.log('COMPLETE', newValue);
-          }}
-          showIndicator
-          renderIndicatorHeight={40}
-          width={50}
-          height={300}
-          step={1}
-          borderRadius={5}
-          maximumTrackTintColor={maximumTrackTintColor}
-          minimumTrackTintColor={minimumTrackTintColor}
-          renderIndicator={renderIcon}
-        />
-      </View>
+      <SafeAreaView style={styles.flexOne}>
+        <ScrollView style={styles.scrollContainer}>
+          <View style={styles.container}>
+            <RnVerticalSlider
+              ref={ref}
+              value={value}
+              disabled={false}
+              min={0}
+              max={100}
+              onChange={onChangeValue}
+              onComplete={(newValue: number) => {
+                console.log('COMPLETE', newValue);
+              }}
+              showIndicator
+              renderIndicatorHeight={40}
+              width={50}
+              height={300}
+              step={1}
+              borderRadius={5}
+              maximumTrackTintColor={maximumTrackTintColor}
+              minimumTrackTintColor={minimumTrackTintColor}
+              renderIndicator={renderIcon}
+            />
+          </View>
+          <View style={styles.contentBox}>
+            <Text onPress={onManualChange(70)}>Set to 70</Text>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     </GestureHandlerRootView>
   );
 };
@@ -88,8 +82,12 @@ const styles = StyleSheet.create({
   flexOne: {
     flex: 1,
   },
-  container: {
+  scrollContainer: {
     flex: 1,
+  },
+  container: {
+    marginTop: 50,
+    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -101,5 +99,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: 40,
     width: 50,
+  },
+  contentBox: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 20,
   },
 });

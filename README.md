@@ -6,7 +6,8 @@ A highly customizable vertical slider component for React Native using React Nat
 
 ## :inbox_tray: Installation
 
-You can install this package using either Yarn or NPM. 
+You can install this package using either Yarn or NPM.
+
 ### <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Npm-logo.svg/1200px-Npm-logo.svg.png" alt="Alt text" width="50">
 
 ```bash
@@ -19,34 +20,48 @@ npm install rn-vertical-slider
 yarn add rn-vertical-slider
 ```
 
-**rn-vertical-slider** requires [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/) to be installed, which is a peer dependency. This is a breaking change from version 2 to version 3.
-
+**rn-vertical-slider** requires [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/) and [react-native-gesture-handler](https://docs.swmansion.com/react-native-gesture-handler/) to be installed, which are peer dependencies.
 
 ## :bulb: Usage
 
-```bash
+```jsx
+import React, { useState } from 'react';
+import { View } from 'react-native';
 import VerticalSlider from 'rn-vertical-slider';
 
 function App() {
   const [value, setValue] = useState(0);
   return (
-    <VerticalSlider
-      value={value}
-      onChange={(value) => setValue(value)}
-      height={200}
-      width={40}
-      step={1}
-      min={0}
-      max={100}
-      borderRadius={5}
-      minimumTrackTintColor="#2979FF"
-      maximumTrackTintColor="#D1D1D6"
-      showBallIndicator
-      ballIndicatorColor="#2979FF"
-      ballIndicatorTextColor="#fff"
-      ballIndicatorWidth={80}
-      ballIndicatorHeight={40}
-    />
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <VerticalSlider
+        value={value}
+        onChange={(value) => setValue(value)}
+        height={200}
+        width={40}
+        step={1}
+        min={0}
+        max={100}
+        borderRadius={5}
+        minimumTrackTintColor="#2979FF"
+        maximumTrackTintColor="#D1D1D6"
+        showIndicator
+        renderIndicator={() => (
+          <View
+            style={{
+              height: 40,
+              width: 80,
+              backgroundColor: '#2979FF',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Text style={{ color: '#fff' }}>{value}</Text>
+          </View>
+        )}
+        containerStyle={{ backgroundColor: '#e0e0e0', borderRadius: 10 }}
+        sliderStyle={{ backgroundColor: '#fff', borderRadius: 5 }}
+      />
+    </View>
   );
 }
 ```
@@ -55,29 +70,25 @@ function App() {
 
 ## :book: Props
 
-| Property               | Type     | Default   | Description                                                                                   |
-|:-----------------------|:---------|:----------|:----------------------------------------------------------------------------------------------|
-| value                  | number   | 0         | Value of the slider.                                                                          |
-| disabled               | bool     | false     | Enable or disable slider.                                                                     |
-| min                    | number   | 0         | Minimum value for slider.                                                                     |
-| max                    | number   | 0         | Maximum value for slider.                                                                     |
-| onChange               | function | null      | Callback continuously called while the user is dragging the slider.                           |
-| onComplete             | function | null      | Callback called when the user finishes changing the value (e.g. when the slider is released). |
-| width                  | number   | 0         | Width of the slider.                                                                          |
-| height                 | number   | 0         | Height of the slider.                                                                         |
-| borderRadius           | number   | 0         | The border radius of component.                                                               |
-| maximumTrackTintColor  | string   | '#eee'    | The top color.                                                                                |
-| minimumTrackTintColor  | string   | '#fff'    | The bottom color.                                                                             |
-| showBallIndicator      | bool     | false     | To show or hide indicator.                                                                    |
-| step                   | number   | 0         | This value describes number of steps to skip.                                                 |
-| ballIndicatorColor     | string   | '#fff'    | Background color for Indicator                                                                |
-| ballIndicatorWidth     | number   | 48        | Diameter of Indicator. [Height of Indicator : If renderIndicator present]                     |
-| ballIndicatorHeight    | number   | 48        | Diameter of Indicator. [Width of Indicator : If renderIndicator present]                      |
-| ballIndicatorPosition  | number   | -50       | Horizontal position of Indicator with respect to current selected value.                      |
-| ballIndicatorTextColor | string   | '#fff'    | Indicator text color.                                                                         |
-| showBackgroundShadow   | boolean  | 0         | Display shadow on Indicator (If available) and Slider                                         |
-| shadowProps            | object   | see below | Shadow Configuration for Slider                                                               |
-| renderIndicator        | boolean  | 0         | Render a custom slider indicator      
+| Property              | Type     | Default    | Description                                                       |
+| :-------------------- | :------- | :--------- | :---------------------------------------------------------------- |
+| min                   | number   | 0          | Minimum value of the slider                                       |
+| max                   | number   | 100        | Maximum value of the slider                                       |
+| step                  | number   | 1          | Step value for the slider                                         |
+| width                 | number   | 350        | Width of the slider                                               |
+| height                | number   | 30         | Height of the slider                                              |
+| borderRadius          | number   | 5          | Border radius of the slider                                       |
+| maximumTrackTintColor | string   | '#3F2DA5'  | Color of the track for the maximum value                          |
+| minimumTrackTintColor | string   | '#77ADE6'  | Color of the track for the minimum value                          |
+| disabled              | boolean  | false      | Whether the slider is disabled                                    |
+| onChange              | function | () => {}   | Callback function called when the slider value changes            |
+| onComplete            | function | () => {}   | Callback function called when the slider value change is complete |
+| value                 | number   | 0          | Current value of the slider                                       |
+| showIndicator         | boolean  | false      | Whether to show the value indicator                               |
+| renderIndicatorHeight | number   | 40         | Height of the custom indicator                                    |
+| renderIndicator       | function | () => null | Function to render a custom indicator                             |
+| containerStyle        | object   | {}         | Custom styles for the slider container                            |
+| sliderStyle           | object   | {}         | Custom styles for the slider                                      |
 
 ## :art: Demo
 

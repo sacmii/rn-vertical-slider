@@ -1,6 +1,4 @@
-import type { StyleProp, ViewStyle } from 'react-native';
-
-export type SliderProps = {
+type TSliderProps = {
   min: number;
   max: number;
   step?: number;
@@ -18,4 +16,9 @@ export type SliderProps = {
   containerStyle?: StyleProp<ViewStyle>;
   sliderStyle?: StyleProp<ViewStyle>;
   renderIndicatorHeight?: number;
+};
+
+type TSliderRef = {
+  setValue: (value: number) => void;
+  setState: (state: boolean) => void;
 };
