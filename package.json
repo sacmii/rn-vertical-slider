@@ -1,6 +1,6 @@
 {
   "name": "rn-vertical-slider",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "description": "A vertical Slider for React Native written entirely in javascript.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
