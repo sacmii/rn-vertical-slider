@@ -1,8 +1,6 @@
-import RNVerticalSlider from './Slider';
+import RNVSlider from './Slider';
+import { TSliderProps, TSliderRef } from './types';
 
-type SliderProps = TSliderProps;
-type SliderRef = TSliderRef;
+export default RNVSlider;
 
-export default RNVerticalSlider;
-
-export { SliderProps, SliderRef };
+export type { TSliderProps as RNVSliderProps, TSliderRef as RNVSliderRef };

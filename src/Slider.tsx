@@ -14,6 +14,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import { TSliderProps, TSliderRef } from './types';
 
 function calculateValue(
   position: number,

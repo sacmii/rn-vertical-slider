@@ -3,7 +3,7 @@ import * as React from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-import RnVerticalSlider, { SliderRef } from 'rn-vertical-slider';
+import RnVerticalSlider, { RNVSliderRef } from 'rn-vertical-slider';
 
 const renderIcon = (newVal: number) => {
   return (
@@ -17,7 +17,7 @@ const renderIcon = (newVal: number) => {
 
 const App: React.FC = () => {
   const [value, setValue] = React.useState(1);
-  const ref = React.useRef<SliderRef>(null);
+  const ref = React.useRef<RNVSliderRef>(null);
   // Calculating color change based on value
   const calculateColors = () => {
     let minimumTrackTintColor = '#f3636b';

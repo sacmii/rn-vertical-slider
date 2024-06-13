@@ -1,4 +1,6 @@
-type TSliderProps = {
+import { StyleProp, ViewStyle } from 'react-native';
+
+export type TSliderProps = {
   min: number;
   max: number;
   step?: number;
@@ -18,7 +20,7 @@ type TSliderProps = {
   renderIndicatorHeight?: number;
 };
 
-type TSliderRef = {
+export type TSliderRef = {
   setValue: (value: number) => void;
   setState: (state: boolean) => void;
 };
