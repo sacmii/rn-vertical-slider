@@ -16,21 +16,21 @@ import Animated, {
 } from 'react-native-reanimated';
 import { TSliderProps, TSliderRef } from './types';
 
-function calculateValue(
+const calculateValue = (
   position: number,
   min: number,
   max: number,
   step: number,
   height: number
-): number {
+): number => {
   'worklet';
   let sliderPosition = height - position;
-  sliderPosition = Math.min(Math.max(sliderPosition, min), height);
+  sliderPosition = Math.min(Math.max(sliderPosition, 0), height);
   let value = (sliderPosition / height) * (max - min) + min;
   value = Math.round(value / step) * step;
   value = Math.min(Math.max(value, min), max);
   return value;
-}
+};
 
 const RNVerticalSlider = React.forwardRef<TSliderRef, TSliderProps>(
   (
@@ -105,7 +105,7 @@ const RNVerticalSlider = React.forwardRef<TSliderRef, TSliderProps>(
     }));
     // slider styles
     const slider = useAnimatedStyle(() => {
-      let heightPercentage = (point.value / max) * 100;
+      let heightPercentage = ((point.value - min) / (max - min)) * 100;
       const style: ViewStyle = {
         backgroundColor: minimumTrackTintColor,
         height: `${heightPercentage}%`,
@@ -116,11 +116,9 @@ const RNVerticalSlider = React.forwardRef<TSliderRef, TSliderProps>(
     const indicator = useAnimatedStyle(() => {
       const style: ViewStyle = {};
       if (showIndicator) {
-        let bottom = (point.value / max) * height;
-        style.bottom = Math.min(
-          Math.max(bottom, 0),
-          height - renderIndicatorHeight
-        );
+        let bottom = ((point.value - min) / (max - min)) * height;
+        bottom = Math.min(Math.max(bottom, 0), height - renderIndicatorHeight);
+        style.bottom = bottom;
       }
       return style;
     }, [showIndicator, point.value]);

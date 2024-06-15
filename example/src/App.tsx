@@ -1,23 +1,27 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import RnVerticalSlider, { RNVSliderRef } from 'rn-vertical-slider';
 
-const renderIcon = (newVal: number) => {
-  return (
-    <View style={styles.renderContainer}>
-      <Animated.Text>
-        <Ionicons name={newVal > 50 ? 'happy' : 'sad'} size={24} color="#fff" />
-      </Animated.Text>
-    </View>
-  );
-};
-
 const App: React.FC = () => {
   const [value, setValue] = React.useState(1);
   const ref = React.useRef<RNVSliderRef>(null);
+  // Icon render
+  const renderIcon = () => {
+    return (
+      <View style={styles.renderContainer}>
+        <Animated.Text>
+          <Ionicons
+            name={value > 50 ? 'happy' : 'sad'}
+            size={24}
+            color="#fff"
+          />
+        </Animated.Text>
+      </View>
+    );
+  };
   // Calculating color change based on value
   const calculateColors = () => {
     let minimumTrackTintColor = '#f3636b';
@@ -44,33 +48,31 @@ const App: React.FC = () => {
   return (
     <GestureHandlerRootView style={styles.flexOne}>
       <SafeAreaView style={styles.flexOne}>
-        <ScrollView style={styles.scrollContainer}>
-          <View style={styles.container}>
-            <RnVerticalSlider
-              ref={ref}
-              value={value}
-              disabled={false}
-              min={0}
-              max={100}
-              onChange={onChangeValue}
-              onComplete={(newValue: number) => {
-                console.log('COMPLETE', newValue);
-              }}
-              showIndicator
-              renderIndicatorHeight={40}
-              width={50}
-              height={300}
-              step={1}
-              borderRadius={5}
-              maximumTrackTintColor={maximumTrackTintColor}
-              minimumTrackTintColor={minimumTrackTintColor}
-              renderIndicator={renderIcon}
-            />
-          </View>
-          <View style={styles.contentBox}>
-            <Text onPress={onManualChange(70)}>Set to 70</Text>
-          </View>
-        </ScrollView>
+        <View style={styles.container}>
+          <RnVerticalSlider
+            ref={ref}
+            value={value}
+            disabled={false}
+            min={0}
+            max={100}
+            step={10}
+            onChange={onChangeValue}
+            onComplete={(newValue: number) => {
+              console.log('COMPLETE', newValue);
+            }}
+            showIndicator
+            renderIndicatorHeight={40}
+            width={50}
+            height={300}
+            borderRadius={5}
+            maximumTrackTintColor={maximumTrackTintColor}
+            minimumTrackTintColor={minimumTrackTintColor}
+            renderIndicator={renderIcon}
+          />
+        </View>
+        <View style={styles.contentBox}>
+          <Text onPress={onManualChange(70)}>Set to 70</Text>
+        </View>
       </SafeAreaView>
     </GestureHandlerRootView>
   );
