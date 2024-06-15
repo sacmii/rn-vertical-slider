@@ -52,6 +52,7 @@ const RNVerticalSlider = React.forwardRef<TSliderRef, TSliderProps>(
       renderIndicator = () => null,
       containerStyle = {},
       sliderStyle = {},
+      animationConfig = { damping: 15 },
     },
     ref
   ) => {
@@ -71,32 +72,36 @@ const RNVerticalSlider = React.forwardRef<TSliderRef, TSliderProps>(
       width,
     ]);
     // Gesture handler
-    const handleGesture = (
-      props:
-        | GestureStateChangeEvent<PanGestureHandlerEventPayload>
-        | GestureUpdateEvent<
-            PanGestureHandlerEventPayload & PanGestureChangeEventPayload
-          >
-    ) => {
-      if (disabledProp.value) return;
-      let value = calculateValue(props.y, min, max, step, height);
-      point.value = withSpring(value, { damping: 15 });
-      runOnJS(onChange)(value);
-    };
-    const handleGestureEnd = (
-      props: GestureStateChangeEvent<PanGestureHandlerEventPayload>
-    ) => {
-      if (disabledProp.value) return;
-      runOnJS(onComplete)(calculateValue(props.y, min, max, step, height));
-    };
+    const handleGesture =
+      (type: 'BEGIN' | 'CHANGE' | 'END') => (eventY: number) => {
+        if (disabledProp.value) return;
+        let value = calculateValue(eventY, min, max, step, height);
+        point.value = withSpring(value, animationConfig);
+        runOnJS(type === 'BEGIN' || type === 'CHANGE' ? onChange : onComplete)(
+          value
+        );
+      };
+    const onGestureStart = (
+      event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
+    ) => handleGesture('BEGIN')(event.y);
+    const onGestureChange = (
+      event: GestureUpdateEvent<
+        PanGestureHandlerEventPayload & PanGestureChangeEventPayload
+      >
+    ) => handleGesture('CHANGE')(event.y);
+    const onGestureEnd = (
+      event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
+    ) => handleGesture('END')(event.y);
     const panGesture = Gesture.Pan()
-      .onBegin(handleGesture)
-      .onChange(handleGesture)
-      .onEnd(handleGestureEnd);
+      .onBegin(onGestureStart)
+      .onChange(onGestureChange)
+      .onEnd(onGestureEnd)
+      .onFinalize(onGestureEnd)
+      .runOnJS(true);
     // Ref methods
     React.useImperativeHandle(ref, () => ({
       setValue: (value: number) => {
-        point.value = withSpring(value, { damping: 15 });
+        point.value = withSpring(value, animationConfig);
         onChange(value);
       },
       setState: (state: boolean) => {
@@ -111,7 +116,7 @@ const RNVerticalSlider = React.forwardRef<TSliderRef, TSliderProps>(
         height: `${heightPercentage}%`,
       };
       return style;
-    }, [point.value, minimumTrackTintColor, borderRadius, height, max]);
+    }, [point.value]);
     // indicator styles
     const indicator = useAnimatedStyle(() => {
       const style: ViewStyle = {};
@@ -121,7 +126,7 @@ const RNVerticalSlider = React.forwardRef<TSliderRef, TSliderProps>(
         style.bottom = bottom;
       }
       return style;
-    }, [showIndicator, point.value]);
+    }, [point.value]);
     return (
       <GestureDetector gesture={panGesture}>
         <View style={[baseViewStyle, containerStyle]}>
