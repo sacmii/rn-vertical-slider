@@ -1,5 +1,5 @@
 import { StyleProp, ViewStyle } from 'react-native';
-import { SpringConfig } from 'react-native-reanimated/lib/typescript/reanimated2/animation/springUtils';
+import { SpringConfig } from 'react-native-reanimated/lib/typescript/animation/springUtils';
 
 export type TSliderProps = {
   min: number;
